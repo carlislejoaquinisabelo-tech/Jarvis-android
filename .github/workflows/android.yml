@@ -36,7 +36,7 @@ jobs:
           ls "$ANDROID_HOME/platforms"
 
       - name: Build JARVIS APK
-        run: gradle assembleDebug --stacktrace
+        run: gradle assembleDebug --stacktrace --info > build.log 2>&1
 
       - name: Upload JARVIS APK
         if: success()
