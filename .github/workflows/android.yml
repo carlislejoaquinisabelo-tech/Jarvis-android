@@ -25,30 +25,18 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android platform
-        run: |
-          sdkmanager "platforms;android-35"
-          sdkmanager "build-tools;35.0.0"
-
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v3
         with:
           gradle-version: '8.9'
 
-      - name: Build JARVIS APK
-        shell: bash
+      - name: Check Android SDK
         run: |
-          set +e
-          gradle assembleDebug --stacktrace --info > build.log 2>&1
-          result=$?
-          echo "## Build diagnostics" >> "$GITHUB_STEP_SUMMARY"
-          echo '```text' >> "$GITHUB_STEP_SUMMARY"
-          tail -n 80 build.log >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-          exit $result
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls "$ANDROID_HOME/platforms"
+
+      - name: Build JARVIS APK
+        run: gradle assembleDebug --stacktrace
 
       - name: Upload JARVIS APK
         if: success()
@@ -56,4 +44,3 @@ jobs:
         with:
           name: JARVIS-APK
           path: app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
